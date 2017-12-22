@@ -188,11 +188,14 @@
 		"pages": {
 			"index.html": {
 				"resources": [
-					"TabFirst.html"
+					"TabFirst.html",
+					"src/TabFirst.html"
 				],
 				"refer": [
 					"TabSecond.html",
-					"TabThird.html"
+					"TabThird.html",
+					"src/TabThird.html",
+					"src/TabSecond.html"
 				],
 				"priority": 0
 			}
