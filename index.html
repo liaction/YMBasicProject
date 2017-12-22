@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="css/mui.min.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<div id="vue_tab_items">
+			<nav class="mui-bar mui-bar-tab" style="background: white;">
+				<a class="mui-tab-item" v-for="item in items" :id="item.id" :class="{'mui-active':item.isSelected}" v-if="item.isShow">
+					<img class="mui-icon" :src="imgSrc(item.id)" />
+					<span class="mui-tab-label" style="font-size: 16px;">{{item.title}}</span>
+				</a>
+			</nav>
+		</div>
+		<script src="js/mui.js"></script>
+		<script src="js/hui.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+			//当需要调整tab的数量时,更改数组长度即可
+			var data_tab = {
+				defaultSelectedId: '0',
+				items: [{
+					id: '0',
+					isSelected: true,
+					isShow: true,
+					title: 'Tab1',
+					img_a: 'img/sy_a.gif',
+					img_d: 'img/sy.gif'
+				}, {
+					id: '1',
+					isSelected: false,
+					isShow: true,
+					title: 'Tab2',
+					img_a: 'img/xx_a.gif',
+					img_d: 'img/xx.gif'
+				}, {
+					id: '2',
+					isSelected: false,
+					isShow: true,
+					title: 'Tab3',
+					img_a: 'img/wd_a.gif',
+					img_d: 'img/wd.png'
+				}]
+			};
+
+			var vue_tab = new Vue({
+				el: '#vue_tab_items',
+				data: data_tab,
+				methods: {
+					imgSrc: function(id) {
+						var item = this.items[id];
+						return item.isSelected ? item.img_a : item.img_d;
+					}
+				}
+			});
+
+			var aniShow = {};
+
+			var preWindows;
+
+			function clickTabXxRightSearchButton() {
+				mui.fire(preWindows[1], 'clickSearch', {});
+			}
+
+			mui.plusReady(function() {
+				var self = plus.webview.currentWebview();
+				preWindows = [
+					plus.webview.create('TabFirst.html', 'TabFirst', {
+						'top': '0px',
+						'bottom': '51px'
+						//						,
+						//						'titleNView': {
+						//							'backgroundcolor': '#0F7FFF',
+						//							'titletext': '首页',
+						//							'titlecolor': '#FFFFFF',
+						//							'type': 'default'
+						//						}
+					}),
+					plus.webview.create('TabSecond.html', 'TabSecond', {
+						'top': '0px',
+						'bottom': '51px',
+						//						'titleNView': {
+						//							'backgroundcolor': '#0F7FFF',
+						//							'titletext': '消息',
+						//							'titlecolor': '#FFFFFF'
+						//							,
+						//							'buttons': [{
+						//								'color': 'white',
+						//								'float': 'right',
+						//								'text': '\ue714',
+						//								'fontSrc': '_www/css/fonts/iconfont.ttf',
+						//								'onclick': clickTabXxRightSearchButton
+						//							}]
+						//						}
+					}),
+					plus.webview.create('TabThird.html', 'TabThird', {
+						'top': '0px',
+						'bottom': '51px'
+						//						,
+						//						'titleNView': {
+						//							'backgroundcolor': '#0F7FFF',
+						//							'titletext': '我的',
+						//							'titlecolor': '#FFFFFF'
+						//						}
+					})
+				];
+
+				for(var i = 0; i < preWindows.length; i++) {
+					var temp = {};
+					var sub = preWindows[i];
+					if(i > 0) {
+						sub.hide();
+					} else {
+						temp[preWindows[i].id] = "true";
+						mui.extend(aniShow, temp);
+					}
+					self.append(sub);
+				}
+
+				//若为iOS平台或非首次显示，则直接显示
+				if(mui.os.ios || aniShow[preWindows[0].id]) {
+					plus.webview.show(preWindows[0]);
+				} else {
+					var temp = {};
+					temp[preWindows[id].id] = "true";
+					mui.extend(aniShow, temp);
+					plus.webview.show(preWindows[0], 'slide-in-right', 300);
+				}
+
+				function whenTabItemClick(vm, id) {
+					var item = vm.items[id];
+					if(item.isSelected) {
+						return;
+					}
+					// 使当前处于选择状态
+					item.isSelected = true;
+
+					// 把上一个选择的设置为未选择状态
+					vm.items[vm.defaultSelectedId].isSelected = false;
+
+					if(mui.os.ios || aniShow[preWindows[id].id]) {
+						plus.webview.show(preWindows[id]);
+					} else {
+						var temp = {};
+						temp[preWindows[id].id] = "true";
+						mui.extend(aniShow, temp);
+						plus.webview.show(preWindows[id], 'fade-in', 300);
+					}
+
+					plus.webview.hide(preWindows[vm.defaultSelectedId]);
+
+					// 把defaultSelectedId更新
+					vm.defaultSelectedId = id;
+				}
+
+				mui('.mui-bar-tab').on('tap', 'a', function(e) {
+					var id = this.getAttribute('id');
+					whenTabItemClick(vue_tab, id);
+				});
+			});
+		</script>
+	</body>
+
+</html>

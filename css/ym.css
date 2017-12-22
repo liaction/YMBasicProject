@@ -1,0 +1,19 @@
+/*全局控制*/
+
+.main-color{
+	color: #087FFF !important;
+}
+
+.main-background-color{
+	background-color: #087FFF !important;
+	color: white;
+}
+
+.mui-bar {
+	background: #087FFF !important;
+	-webkit-box-shadow: none;box-shadow:none
+}
+
+.mui-title {
+	color: white;
+}
